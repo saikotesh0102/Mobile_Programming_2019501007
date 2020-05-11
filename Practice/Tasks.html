@@ -36,10 +36,11 @@
 
 				render(){
 
-					const tasks = this.props.tasks.map((task, i) => {
+					const tasks = this.props.tasks.map((tasks, i) => {
 						return(
 							<tr key={i}>
-                                <td>{task.name}</td>
+                                <td style = {{textDecoration : tasks.complete ? "line-through" : ""}} key = {i}> {tasks.name} </td>
+								<td><button data-index = {i} onClick = {this.taskDone}>Done</button></td>
                                 <td><button data-index = {i} onClick = {this.deleteTask}>Delete</button></td>
                             </tr>
 						);
@@ -52,6 +53,7 @@
                                 <thead>
                                     <tr>
                                         <th>Task</th>
+										<th>Task Status</th>
                                         <th>Delete</th>
                                     </tr>
                                 </thead>
@@ -83,6 +85,11 @@
 				deleteTask = (event) => {
                     this.props.deleteTask(event.target.dataset.index);
                 }
+
+				taskDone = (event) => {
+					this.props.taskDone(event.target.dataset.index);
+					// console.log(event.target.dataset.index)
+            	}
 			}
 
 			class App extends React.Component{
@@ -100,6 +107,7 @@
 							tasks = {this.state.tasks}
 							addTask = {this.addTask}
 							deleteTask = {this.deleteTask}
+							taskDone = {this.taskDone}
 						/>
 					);
 				};
@@ -117,6 +125,14 @@
                         return { tasks };
                     });
                 }
+
+				taskDone = (index) => {
+					this.setState(state => {
+						const tasks = [...state.tasks];
+						tasks[index].complete = !tasks[index].complete
+						return {tasks}
+					});
+				}
 			}
 
 			ReactDOM.render(<App />, document.getElementById("app"));
