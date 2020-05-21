@@ -24,14 +24,14 @@
 	<body>
 		<div id = "app"></div>
 		<script type = "text/babel">
-
 			class Task extends React.Component{
 
 				constructor(props){
 					super(props)
 					this.state = {
-                        input : ""
-                    };
+						name : "",
+						date : ""
+					};
 				}
 
 				render(){
@@ -39,10 +39,11 @@
 					const tasks = this.props.tasks.map((tasks, i) => {
 						return(
 							<tr key={i}>
-                                <td style = {{textDecoration : tasks.complete ? "line-through" : ""}} key = {i}> {tasks.name} </td>
+								<td style = {{textDecoration : tasks.complete ? "line-through" : ""}} key = {i}> {tasks.name} </td>
+								<td>{tasks.date}</td>
 								<td><button data-index = {i} onClick = {this.taskDone}>Done</button></td>
-                                <td><button data-index = {i} onClick = {this.deleteTask}>Delete</button></td>
-                            </tr>
+								<td><button data-index = {i} onClick = {this.deleteTask}>Delete</button></td>
+							</tr>
 						);
 					});
 
@@ -50,46 +51,50 @@
 						<div>
 							<h2>To Do Tasks</h2>
 							<table>
-                                <thead>
-                                    <tr>
-                                        <th>Task</th>
-										<th>Task Status</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {tasks}
-                                </tbody>
-                            </table>
+								<thead>
+									<tr>
+										<th> Task </th>
+										<th> Due Date </th>
+										<th> Task Status </th>
+										<th> Delete </th>
+									</tr>
+								</thead>
+								<tbody>
+									{tasks}
+								</tbody>
+							</table>
 							<br/>
 							<hr/>
-							<input onChange = {this.handleChange} name = "task" placeholder = "Add a Task" value = {this.state.input} />
+							<input onChange = {this.handleChange} name = "task" placeholder = "Add a Task" required value = {this.state.input}/>
+							<input type = "date" onChange = {this.handleChange} />
 							<button onClick = {this.addTask}> Add Task</button>
 						</div>
 					);
 				};
 
 				handleChange = (event) => {
-                    this.setState({
-                        input : event.target.value
-                    });
-                }
+					this.setState({
+						name : event.target.value,
+						date : new Date(event.target.value) 
+					});
+				}
 
 				addTask = () => {
-                    this.props.addTask(this.state.input);
-                    this.setState({
-                        input : ""
-                    });
-                }
+					this.props.addTask(this.state.name, this.state.date);
+					this.setState({
+						name : "",
+						date : ""
+					});
+				}
 
 				deleteTask = (event) => {
-                    this.props.deleteTask(event.target.dataset.index);
-                }
+					this.props.deleteTask(event.target.dataset.index);
+				}
 
 				taskDone = (event) => {
 					this.props.taskDone(event.target.dataset.index);
 					// console.log(event.target.dataset.index)
-            	}
+				}
 			}
 
 			class App extends React.Component{
@@ -112,19 +117,19 @@
 					);
 				};
 
-				addTask = (name) => {
-                    this.setState(state => ({
-                        tasks : [...state.tasks, {name}]
-                    }));
-                }
+				addTask = (name, date) => {
+					this.setState(state => ({
+						tasks : [...state.tasks, {name, date}]
+					}));
+				}
 
 				deleteTask = (index) => {
-                    this.setState(state => {
-                        const tasks = [...state.tasks];
-                        tasks.splice(index, 1);
-                        return { tasks };
-                    });
-                }
+					this.setState(state => {
+						const tasks = [...state.tasks];
+						tasks.splice(index, 1);
+						return {tasks};
+					});
+				}
 
 				taskDone = (index) => {
 					this.setState(state => {
